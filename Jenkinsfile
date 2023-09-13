@@ -49,7 +49,7 @@ pipeline {
                 script {
                     // Compute the PACKAGE_NAME dynamically based on Git branch and build number
                     def PACKAGE_NAME = "${CHART_NAME}-${env.BRANCH_NAME}-${BUILD_NUMBER}.tgz"
-                    def APP_VERSION = sh(script: 'git describe --tags --always', returnStdout: true).trim()
+                    def APP_VERSION = "1.${RELEASE}.${BUILD_NUMBER}"
                     def CHART_VERSION = "1.0.${BUILD_NUMBER}"
 
                     // Bundle the Helm chart
