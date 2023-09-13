@@ -1,6 +1,7 @@
 from flask import Flask, request
 import psycopg2
 import time
+import os
 
 app = Flask(__name__)
 
@@ -8,10 +9,10 @@ def wait_for_db():
     while True:
         try:
             conn = psycopg2.connect(
-                host="db",
-                database="mydatabase",
-                user="myuser",
-                password="mypassword"
+                host=os.getenv("DB_HOST", "db"),
+                database=os.getenv("DB_NAME", "mydatabase"),
+                user=os.getenv("DB_USER", "myuser"),
+                password=os.getenv("DB_PASSWORD", "mypassword")
             )
             conn.close()
             print("Connected to the database.")
@@ -23,10 +24,10 @@ def wait_for_db():
 
 def create_table_if_not_exists():
     conn = psycopg2.connect(
-        host="db",
-        database="mydatabase",
-        user="myuser",
-        password="mypassword"
+        host=os.getenv("DB_HOST", "db"),
+        database=os.getenv("DB_NAME", "mydatabase"),
+        user=os.getenv("DB_USER", "myuser"),
+        password=os.getenv("DB_PASSWORD", "mypassword")
     )
     cursor = conn.cursor()
     cursor.execute("""
@@ -41,10 +42,10 @@ def create_table_if_not_exists():
 
 def store_ip(ip):
     conn = psycopg2.connect(
-        host="db",
-        database="mydatabase",
-        user="myuser",
-        password="mypassword"
+        host=os.getenv("DB_HOST", "db"),
+        database=os.getenv("DB_NAME", "mydatabase"),
+        user=os.getenv("DB_USER", "myuser"),
+        password=os.getenv("DB_PASSWORD", "mypassword")
     )
     cursor = conn.cursor()
     cursor.execute("INSERT INTO reversed_ips (ip) VALUES (%s)", (ip,))
