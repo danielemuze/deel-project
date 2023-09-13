@@ -15,6 +15,7 @@ spec:
     path: "/mnt/data/postgres"
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -27,6 +28,7 @@ spec:
   clusterIP: None
 
 ---
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -39,6 +41,7 @@ data:
 
 
 ---
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -60,8 +63,8 @@ spec:
         ports:
         - containerPort: 5432
         envFrom:
-        - configMapRef:
-            name: postgres-config
+        - secretRef:
+            name: postgres-secret  # Reference to the secret instead of configMap
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
