@@ -22,18 +22,18 @@ spec:
           value: "postgres-service"  # match the name of the postgres Service
         - name: DB_NAME
           valueFrom:
-            configMapKeyRef:
-              name: postgres-config  # match the name of the postgres ConfigMap
+            secretKeyRef:
+              name: postgres-secret  # match the name of the Secret
               key: POSTGRES_DB
         - name: DB_USER
           valueFrom:
-            configMapKeyRef:
-              name: postgres-config
+            secretKeyRef:
+              name: postgres-secret  # match the name of the Secret
               key: POSTGRES_USER
         - name: DB_PASSWORD
           valueFrom:
-            configMapKeyRef:
-              name: postgres-config
+            secretKeyRef:
+              name: postgres-secret  # match the name of the Secret
               key: POSTGRES_PASSWORD
         resources:
           limits:
@@ -42,9 +42,7 @@ spec:
           requests:
             cpu: "0.5"
             memory: 1Gi
-
 ---
-
 apiVersion: v1
 kind: Service
 metadata:

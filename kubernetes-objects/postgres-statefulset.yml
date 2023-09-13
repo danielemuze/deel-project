@@ -28,13 +28,15 @@ spec:
 
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
-  name: postgres-config
+  name: postgres-secret
+type: Opaque
 data:
-  POSTGRES_DB: "mydatabase"
-  POSTGRES_USER: "myuser"
-  POSTGRES_PASSWORD: "mypassword"
+  POSTGRES_DB: bXlkYXRhYmFzZQ==
+  POSTGRES_USER: bXl1c2Vy
+  POSTGRES_PASSWORD: bXlwYXNzd29yZA==
+
 
 ---
 apiVersion: apps/v1
