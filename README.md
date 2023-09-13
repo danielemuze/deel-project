@@ -1,1 +1,1 @@
-# deel-project
+# This project is a CI/CD pipeline for building a Python App that uses PostgreSQL to persist data.
