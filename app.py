@@ -3,6 +3,24 @@ import psycopg2
 
 app = Flask(__name__)
 
+def create_table_if_not_exists():
+    conn = psycopg2.connect(
+        host="db",
+        database="mydatabase",
+        user="myuser",
+        password="mypassword"
+    )
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reversed_ips (
+            id SERIAL PRIMARY KEY,
+            ip VARCHAR(255) NOT NULL
+        );
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 def store_ip(ip):
     conn = psycopg2.connect(
         host="db",
@@ -24,4 +42,5 @@ def reverse_ip():
     return reversed_ip
 
 if __name__ == '__main__':
+    create_table_if_not_exists()
     app.run(host='0.0.0.0', port=5000)
