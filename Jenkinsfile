@@ -9,6 +9,8 @@ pipeline {
         RELEASE = "1.0.0"
         DOCKER_USER = "danielemuze"
         DOCKER_PASS = 'docker-token'
+        HELM_USER = "danielemuze"
+        HELM_PASS = credentials('docker-token')
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         HELM_REGISTRY = "oci://registry-1.docker.io"
@@ -53,7 +55,7 @@ pipeline {
                     // Bundle the Helm chart
                     sh """
                     helm package deel-helm-chart --app-version=${APP_VERSION} --version=${CHART_VERSION}
-                    echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                     helm push ${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
                     """
                 }
