@@ -11,7 +11,7 @@ pipeline {
         DOCKER_PASS = 'docker-token'
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-        HELM_EXPERIMENTAL_OCI = 1
+        HELM_REGISTRY = "oci://registry-1.docker.io"
     }
 
     stages {
@@ -45,15 +45,20 @@ pipeline {
         stage("Bundle and Upload Helm Chart") {
             steps {
                 script {
+                    // Compute the PACKAGE_NAME dynamically based on Git branch and build number
+                    def PACKAGE_NAME = "${CHART_NAME}-${env.BRANCH_NAME}-${BUILD_NUMBER}"
+                    def APP_VERSION = sh(script: 'git describe --tags --always', returnStdout: true).trim()
+                    def CHART_VERSION = "1.0.${BUILD_NUMBER}"
+
                     // Bundle the Helm chart
-                    sh "helm package ${CHART_NAME} -d ./target"
-                    // Log in to Docker Hub
-                    sh "echo ${DOCKER_PASS} | helm registry login -u ${DOCKER_USER} --password-stdin"
-                    // Push the Helm chart to Docker Hub as an OCI artifact
-                    sh "helm chart save ./target/${CHART_NAME}-${RELEASE}.tgz ${DOCKER_USER}/${CHART_NAME}:${RELEASE}"
-                    sh "helm chart push ${DOCKER_USER}/${CHART_NAME}:${RELEASE}"
+                    sh """
+                    helm package --app-version=${APP_VERSION} --version=${CHART_VERSION}
+                    echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                    helm push ${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
+                    """
                 }
             }
         }
     }
+
 }
