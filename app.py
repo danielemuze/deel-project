@@ -1,7 +1,25 @@
 from flask import Flask, request
 import psycopg2
+import time
 
 app = Flask(__name__)
+
+def wait_for_db():
+    while True:
+        try:
+            conn = psycopg2.connect(
+                host="db",
+                database="mydatabase",
+                user="myuser",
+                password="mypassword"
+            )
+            conn.close()
+            print("Connected to the database.")
+            return
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("Waiting for database...")
+            time.sleep(2)
 
 def create_table_if_not_exists():
     conn = psycopg2.connect(
@@ -42,5 +60,6 @@ def reverse_ip():
     return reversed_ip
 
 if __name__ == '__main__':
+    wait_for_db()
     create_table_if_not_exists()
     app.run(host='0.0.0.0', port=5000)
