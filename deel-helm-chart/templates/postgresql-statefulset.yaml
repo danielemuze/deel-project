@@ -5,7 +5,13 @@ metadata:
 spec:
   serviceName: "{{ .Release.Name }}-postgres-service"
   replicas: {{ .Values.db.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgres
   template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgres
     spec:
       containers:
       - name: postgres
