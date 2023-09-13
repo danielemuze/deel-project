@@ -52,7 +52,7 @@ pipeline {
 
                     // Bundle the Helm chart
                     sh """
-                    helm package --app-version=${APP_VERSION} --version=${CHART_VERSION}
+                    helm package deel-helm-chart --app-version=${APP_VERSION} --version=${CHART_VERSION}
                     echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
                     helm push ${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
                     """
