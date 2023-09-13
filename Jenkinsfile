@@ -52,12 +52,18 @@ pipeline {
                     def APP_VERSION = "1.${RELEASE}.${BUILD_NUMBER}"
                     def CHART_VERSION = "1.0.${BUILD_NUMBER}"
 
+                    sh """
+                    echo ${PACKAGE_NAME}
+                    echo ${APP_VERSION}
+                    echo ${CHART_VERSION}
+                    """
+
                     // Bundle the Helm chart
                     withCredentials([string(credentialsId: 'helm-token', variable: 'HELM_PASS')]) {
                     sh """
-                    echo \$PACKAGE_NAME
-                    echo \$APP_VERSION
-                    echo \$CHART_VERSION
+                    echo ${PACKAGE_NAME}
+                    echo ${APP_VERSION}
+                    echo ${CHART_VERSION}
                     helm package deel-helm-chart --app-version=\${APP_VERSION} --version=\${CHART_VERSION} \${CHART_NAME} -d ./
                     docker login -u \${DOCKER_USER} -p \${HELM_PASS}
                     helm push \${PACKAGE_NAME} \${HELM_REGISTRY}/\${DOCKER_USER}
