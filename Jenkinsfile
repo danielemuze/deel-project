@@ -55,6 +55,9 @@ pipeline {
                     // Bundle the Helm chart
                     withCredentials([string(credentialsId: 'helm-token', variable: 'HELM_PASS')]) {
                     sh '''
+                    echo $PACKAGE_NAME
+                    echo $APP_VERSION
+                    echo $CHART_VERSION
                     helm package deel-helm-chart --app-version=${APP_VERSION} --version=${CHART_VERSION} ${CHART_NAME} -d ./
                     docker login -u ${DOCKER_USER} -p ${HELM_PASS}
                     helm push ${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
