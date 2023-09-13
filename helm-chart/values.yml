@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: reverse-ip-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+db:
+  postgresqlHost: my-postgresql-host
+  postgresqlPort: 5432
+  postgresqlUser: myuser
+  postgresqlPassword: mypassword
+  postgresqlDatabase: mydatabase
