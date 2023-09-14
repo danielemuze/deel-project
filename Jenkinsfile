@@ -9,7 +9,7 @@ pipeline {
         RELEASE = "1.0.0"
         DOCKER_USER = "danielemuze"
         DOCKER_PASS = 'docker-token'
-        KUBECONFIG_TOKEN = 'kubeconfig-token' 
+        KUBECONFIG_TOKEN = credentials('kubeconfig-token') 
         HELM_USER = "danielemuze"
         HELM_PASS = credentials('docker-token')
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
