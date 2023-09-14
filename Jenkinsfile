@@ -9,6 +9,7 @@ pipeline {
         RELEASE = "1.0.0"
         DOCKER_USER = "danielemuze"
         DOCKER_PASS = 'docker-token'
+        KUBECONFIG_TOKEN = 'kubeconfig-token' 
         HELM_USER = "danielemuze"
         HELM_PASS = credentials('docker-token')
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
@@ -64,8 +65,28 @@ pipeline {
                     withCredentials([string(credentialsId: 'helm-token', variable: 'HELM_PASS')]) {
                         sh """
                         helm package ${CHART_NAME} --app-version=${APP_VERSION} --version=${CHART_VERSION} -d ${DEST_PATH}
-                        docker login -u ${DOCKER_USER} -p ${HELM_PASS}
-                        helm push ${DEST_PATH}/${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
+                        docker login -u ${HELM_USER} -p ${HELM_PASS}
+                        helm push ${DEST_PATH}/${PACKAGE_NAME} ${HELM_REGISTRY}/${HELM_USER}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage("Deploy Helm Chart to Kubernetes") {
+            steps {
+                script {
+                    def KUBECONFIG_PATH = "/home/jenkins/.kubeconfig" 
+                    def NAMESPACE = "default" 
+                    def RELEASE_NAME = "deel-devops" 
+                    def CHART_VERSION = "1.0.${BUILD_NUMBER}"
+
+                    // Deploy the Helm chart
+                    withCredentials([string(credentialsId: 'kubeconfig-token', variable: 'KUBECONFIG_TOKEN')]) {
+                        sh """
+                        export KUBECONFIG=${KUBECONFIG_PATH}
+                        helm install ${RELEASE_NAME} ${HELM_REGISTRY}/${HELM_USER}/${CHART_NAME} --version ${CHART_VERSION} \\
+                        --namespace ${NAMESPACE}
                         """
                     }
                 }
