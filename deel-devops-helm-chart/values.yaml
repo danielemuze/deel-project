@@ -1,0 +1,82 @@
+deployment:
+  name: web
+  replicas: 1
+  labels:
+    app: web
+  container:
+    name: web
+    image:
+      repository: danielemuze/deel-project
+      tag: latest
+    port: 5000
+  env:
+    dbHost: "postgres-service"
+  secret:
+    name: postgres-secret
+  resources:
+    limits:
+      cpu: "1"
+      memory: 2Gi
+    requests:
+      cpu: "0.5"
+      memory: 1Gi
+
+service:
+  name: web-service
+  selector:
+    app: web
+  ports:
+    protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer
+
+persistentVolume:
+  name: postgres-pv
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes: ReadWriteOnce
+  reclaimPolicy: Retain
+  storageClassName: manual
+  hostPath: "/mnt/data/postgres"
+
+secret:
+  name: postgres-secret
+  type: Opaque
+  data:
+    POSTGRES_DB: bXlkYXRhYmFzZQ==
+    POSTGRES_USER: bXl1c2Vy
+    POSTGRES_PASSWORD: bXlwYXNzd29yZA==
+
+dbService:
+  name: postgres-service
+  port: 5432
+  selector:
+    app: postgres
+  clusterIP: None
+
+statefulSet:
+  name: postgres
+  serviceName: postgres-service
+  replicas: 1
+  labels:
+    app: postgres
+  container:
+    name: postgres
+    image:
+      repository: postgres
+      tag: 13.2
+    port: 5432
+  secret:
+    name: postgres-secret
+  volume:
+    name: postgres-storage
+    mountPath: /var/lib/postgresql/data
+  volumeClaim:
+    name: postgres-storage
+    storageClassName: manual
+    accessModes: ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi

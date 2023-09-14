@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.statefulSet.name }}
+spec:
+  serviceName: {{ .Values.statefulSet.serviceName }}
+  replicas: {{ .Values.statefulSet.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.statefulSet.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.statefulSet.labels.app }}
+    spec:
+      containers:
+      - name: {{ .Values.statefulSet.container.name }}
+        image: "{{ .Values.statefulSet.container.image.repository }}:{{ .Values.statefulSet.container.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.statefulSet.container.port }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.statefulSet.secret.name }}
+        volumeMounts:
+        - name: {{ .Values.statefulSet.volume.name }}
+          mountPath: {{ .Values.statefulSet.volume.mountPath }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.statefulSet.volumeClaim.name }}
+    spec:
+      storageClassName: {{ .Values.statefulSet.volumeClaim.storageClassName }}
+      accessModes: 
+      - {{ .Values.statefulSet.volumeClaim.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.statefulSet.volumeClaim.resources.requests.storage }}

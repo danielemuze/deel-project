@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         APP_NAME = "deel-container"
-        CHART_NAME = "deel-helm-chart" 
+        CHART_NAME = "deel-devops-helm-chart" 
         RELEASE = "1.0.0"
         DOCKER_USER = "danielemuze"
         DOCKER_PASS = 'docker-token'

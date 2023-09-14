@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.labels.app }}
+    spec:
+      containers:
+      - name: {{ .Values.deployment.container.name }}
+        image: "{{ .Values.deployment.container.image.repository }}:{{ .Values.deployment.container.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.deployment.container.port }}
+        env:
+        - name: DB_HOST
+          value: {{ .Values.deployment.env.dbHost }}
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.deployment.secret.name }}
+              key: POSTGRES_DB
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.deployment.secret.name }}
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.deployment.secret.name }}
+              key: POSTGRES_PASSWORD
+        resources:
+          limits:
+            cpu: "{{ .Values.deployment.resources.limits.cpu }}"
+            memory: {{ .Values.deployment.resources.limits.memory }}
+          requests:
+            cpu: "{{ .Values.deployment.resources.requests.cpu }}"
+            memory: {{ .Values.deployment.resources.requests.memory }}
