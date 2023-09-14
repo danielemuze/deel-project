@@ -48,26 +48,25 @@ pipeline {
             steps {
                 script {
                     // Compute the PACKAGE_NAME dynamically based on Git branch and build number
-                    def PACKAGE_NAME = "${CHART_NAME}-${env.BRANCH_NAME}-${BUILD_NUMBER}.tgz"
+                    def PACKAGE_NAME = "${CHART_NAME}-${BUILD_NUMBER}.tgz"
                     def APP_VERSION = "1.${RELEASE}.${BUILD_NUMBER}"
                     def CHART_VERSION = "1.0.${BUILD_NUMBER}"
+                    def DEST_PATH = './packaged-charts' // Destination directory to store packaged charts
 
+                    // Create destination directory only if it doesn't exist
                     sh """
-                    echo ${PACKAGE_NAME}
-                    echo ${APP_VERSION}
-                    echo ${CHART_VERSION}
+                    if [ ! -d \"${DEST_PATH}\" ]; then
+                    mkdir ${DEST_PATH}
+                    fi
                     """
 
                     // Bundle the Helm chart
                     withCredentials([string(credentialsId: 'helm-token', variable: 'HELM_PASS')]) {
-                    sh """
-                    echo ${PACKAGE_NAME}
-                    echo ${APP_VERSION}
-                    echo ${CHART_VERSION}
-                    helm package deel-helm-chart --app-version=\${APP_VERSION} --version=\${CHART_VERSION} \${CHART_NAME} -d ./
-                    docker login -u \${DOCKER_USER} -p \${HELM_PASS}
-                    helm push \${PACKAGE_NAME} \${HELM_REGISTRY}/\${DOCKER_USER}
-                    """
+                        sh """
+                        helm package ${CHART_NAME} --app-version=${APP_VERSION} --version=${CHART_VERSION} -d ${DEST_PATH}
+                        docker login -u ${DOCKER_USER} -p ${HELM_PASS}
+                        helm push ${DEST_PATH}/${PACKAGE_NAME} ${HELM_REGISTRY}/${DOCKER_USER}
+                        """
                     }
                 }
             }
