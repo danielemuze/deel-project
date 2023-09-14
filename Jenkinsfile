@@ -48,9 +48,9 @@ pipeline {
             steps {
                 script {
                     // Compute the PACKAGE_NAME dynamically based on Git branch and build number
-                    def PACKAGE_NAME = "${CHART_NAME}-${BUILD_NUMBER}.tgz"
                     def APP_VERSION = "1.${RELEASE}.${BUILD_NUMBER}"
                     def CHART_VERSION = "1.0.${BUILD_NUMBER}"
+                    def PACKAGE_NAME = "${CHART_NAME}-${CHART_VERSION}.tgz"
                     def DEST_PATH = './packaged-charts' // Destination directory to store packaged charts
 
                     // Create destination directory only if it doesn't exist
